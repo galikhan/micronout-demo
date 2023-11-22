@@ -1,0 +1,22 @@
+#Tue Nov 14 09:03:05 GMT 2023
+micronaut:
+  application:
+    name: micronout-demo
+  server:
+    port: 8180
+
+datasources:
+  default:
+    db-type: postgres
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/santec_shop?preparedStatementCacheQueries=0
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    dialect: POSTGRES
+
+
+flyway:
+  datasources:
+    default:
+      enabled: true
