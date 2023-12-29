@@ -1,0 +1,1 @@
+alter table category add column image_ bigint references file(id_);

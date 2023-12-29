@@ -1,0 +1,1 @@
+alter table category add column level_ integer default 0;

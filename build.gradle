@@ -27,8 +27,9 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.data:micronaut-data-jdbc")
     implementation("io.micronaut.sql:micronaut-jooq")
-//    implementation("org.jooq:jooq-codegen:3.18.4")
-//    implementation("org.jooq:jooq-meta:3.18.4")
+    implementation("net.coobird:thumbnailator:0.4.3")
+    implementation("io.micronaut.rxjava3:micronaut-rxjava3")
+    implementation("io.micronaut.views:micronaut-views-thymeleaf")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.yaml:snakeyaml")

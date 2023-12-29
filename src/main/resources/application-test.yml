@@ -6,6 +6,14 @@ micronaut:
     port: 8181
     cors:
       enabled: true
+    max-request-size: '10MB'
+    multipart:
+      max-file-size: '10MB'
+  router:
+    static-resources:
+      main:
+        paths: classpath:views
+        mapping: /main/**
 
 datasources:
   default:
@@ -22,3 +30,9 @@ flyway:
   datasources:
     default:
       enabled: false
+
+upload:
+  imagePath: /home/gali/upload/images
+  documentPath: /home/gali/upload/docs
+
+apiUrl: http://161.97.144.45:8181/

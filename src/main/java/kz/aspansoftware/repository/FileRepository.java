@@ -1,11 +1,15 @@
 package kz.aspansoftware.repository;
 
+import io.micronaut.json.tree.JsonArray;
 import jakarta.inject.Singleton;
 import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.SantecFile;
 import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static kz.jooq.model.tables.File.FILE;
 import static kz.jooq.model.tables.Product.PRODUCT;
@@ -20,17 +24,38 @@ public class FileRepository {
         this.dsl = dsl;
     }
 
-    public SantecFile create(SantecFile file) {
+    public SantecFile create(Long container, String contClass, String filename, String filePath) {
         return this.dsl
                 .insertInto(FILE)
-                .set(FILE.CONTAINER_, file.container())
-                .set(FILE.CONTAINER_CLASS_, file.containerClass())
-                .set(FILE.FILENAME_, file.filename())
-                .set(FILE.FILEPATH_, file.filepath())
-                .set(FILE.UUID_, file.uuid())
+                .set(FILE.CONTAINER_, container)
+                .set(FILE.CONTAINER_CLASS_, contClass)
+                .set(FILE.FILENAME_, filename)
+                .set(FILE.FILEPATH_, filePath)
+                .set(FILE.UUID_, UUID.randomUUID().toString())
                 .set(FILE.CREATED_, LocalDateTime.now())
                 .returning()
                 .fetchOne(mapping(SantecFile::new));
     }
 
+    public List<SantecFile> findByContainer(Long container) {
+        return this.dsl
+
+                .selectFrom(FILE)
+                .where(FILE.CONTAINER_.eq(container))
+                .fetch().stream().map(SantecFile::toSantecFile)
+                .collect(Collectors.toList());
+    }
+
+    public List<SantecFile> findByContainerAndClass(Long container, String containerClass) {
+        return this.dsl
+
+                .selectFrom(FILE)
+                .where(FILE.CONTAINER_.eq(container).and(FILE.CONTAINER_CLASS_.eq(containerClass)))
+                .fetch().stream().map(SantecFile::toSantecFile)
+                .collect(Collectors.toList());
+    }
+
+    public int delete(Long id) {
+        return this.dsl.update(FILE).set(FILE.IS_REMOVED_, true).execute();
+    }
 }

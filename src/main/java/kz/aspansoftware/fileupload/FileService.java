@@ -1,9 +1,5 @@
 //package kz.aspansoftware.fileupload;
 //
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.multipart.MultipartFile;
-//
 //import java.io.File;
 //import java.io.IOException;
 //import java.nio.file.Files;
@@ -14,10 +10,8 @@
 //import java.util.Optional;
 //import java.util.stream.Collectors;
 //
-//@Service
 //public class FileService {
 //
-//    @Value("${file.upload.path}")
 //    private String FILE_UPLOAD;
 //
 //    private FileRepository fileRepository;
@@ -34,13 +28,13 @@
 //
 //                byte[] bytes = file.getBytes();
 //                String pathUrl = FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename();
-//                String ext = FileUtils.getExtension(file.getOriginalFilename());
+//                String ext = FileUtil.getExtension(file.getOriginalFilename());
 //                Path path = Paths.get(pathUrl);
 //                File fileCreated = Files.write(path, bytes).toFile();
 //                System.out.println(fileCreated.getAbsolutePath());
 //
 //                pathUrl = FILE_UPLOAD + commonUUID + "_" + file.getOriginalFilename();
-//                boolean compressedImage = FileUtils.createImageWithCustomHeight(fileCreated, 500, ext, pathUrl);
+//                boolean compressedImage = FileUtil.createImageWithCustomHeight(fileCreated, 500, ext, pathUrl);
 //
 //                FileDto dto = new FileDto();
 //                dto.commonUUID = commonUUID;

@@ -8,7 +8,27 @@
         </encoder>
     </appender>
 
+    <property name="LOG_FILE" value="santec_shop" />
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/${LOG_FILE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>1</maxHistory>
+            <totalSizeCap>3MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="kz.aspansoftware" level="INFO">
+        <appender-ref ref="FILE" />
+    </logger>
+
+
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
+

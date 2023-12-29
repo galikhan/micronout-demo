@@ -4,6 +4,22 @@ micronaut:
     name: micronout-demo
   server:
     port: 8180
+    max-request-size: '10MB'
+    multipart:
+      max-file-size: '10MB'
+    cors:
+      enabled: true
+  router:
+    static-resources:
+      main:
+        paths: classpath:views
+        mapping: /main/**
+
+
+  views:
+    thymeleaf:
+      enabled: true
+
 
 datasources:
   default:
@@ -20,3 +36,10 @@ flyway:
   datasources:
     default:
       enabled: true
+
+upload:
+  imagePath: /Users/gali/IdeaProjects/upload/images
+  documentPath: /Users/gali/IdeaProjects/upload/docs
+
+
+apiUrl: http://localhost:8180/
