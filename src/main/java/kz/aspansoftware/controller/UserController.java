@@ -13,7 +13,7 @@ import kz.aspansoftware.repository.UserRepository;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Controller("/")
+@Controller("/api/")
 public class UserController {
 
     @Inject

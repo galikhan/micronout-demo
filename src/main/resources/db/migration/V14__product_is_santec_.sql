@@ -1,0 +1,1 @@
+alter table product add column is_santec_ boolean default false;

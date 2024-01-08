@@ -16,7 +16,7 @@ import kz.aspansoftware.repository.ProductSizeRepository;
 
 import java.util.List;
 
-@Controller("/product")
+@Controller("/api/product")
 public class ProductSizeController {
 
     @Inject

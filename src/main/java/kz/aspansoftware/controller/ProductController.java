@@ -18,7 +18,7 @@ import kz.aspansoftware.service.ProductPagination;
 import java.util.List;
 import java.util.Optional;
 
-@Controller("/product")
+@Controller("/api/product")
 public class ProductController {
 
     ProductRepository repository;

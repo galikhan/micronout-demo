@@ -28,7 +28,8 @@ public class ProductRepository {
                 .set(PRODUCT.VIDEO_, product.video())
                 .set(PRODUCT.IS_NEW_, product.isNew())
                 .set(PRODUCT.IS_REMOVED_, product.isRemoved())
-                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_)
+                .set(PRODUCT.IS_SANTEC_, product.isSantec())
+                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
                 .fetchOne(mapping(Product::new));
     }
 
@@ -41,18 +42,11 @@ public class ProductRepository {
                 .set(PRODUCT.VIDEO_, product.video())
                 .set(PRODUCT.IS_NEW_, product.isNew())
                 .set(PRODUCT.IS_REMOVED_, product.isRemoved())
+                .set(PRODUCT.IS_SANTEC_, product.isSantec())
                 .where(PRODUCT.ID_.eq(product.id()))
-                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_)
+                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
                 .fetchOne(mapping(Product::new));
     }
-
-//    public Optional<User> getUserByEmail(String email) {
-//        return this.dsl
-//                .select(USERS.ID, USERS.NAME, USERS.EMAIL)
-//                .from(USERS)
-//                .where(USERS.EMAIL.equalIgnoreCase(email))
-//                .fetchOptional(mapping(User::new));
-//    }
 
     public int delete(Long id) {
         return this.dsl.update(PRODUCT)
@@ -60,7 +54,7 @@ public class ProductRepository {
                 .where(PRODUCT.ID_.eq(id))
                 .execute();
     }
-//
+
     public List<Product> findAll() {
         return this.dsl.selectFrom(PRODUCT)
                 .fetch().stream().map(Product::toProduct)
@@ -98,9 +92,13 @@ public class ProductRepository {
 
 
     public Product findById(Long id) {
-        return this.dsl.selectFrom(PRODUCT)
+        var result = this.dsl.selectFrom(PRODUCT)
                 .where(PRODUCT.ID_.eq(id))
-                .fetchOne(mapping(Product::new));
+                .fetchOne();
+        if(result != null) {
+            return Product.toProduct(result);
+        }
+        return null;
     }
 
     public List<Product>  findByCategory(Long categoryId) {

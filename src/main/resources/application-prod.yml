@@ -3,29 +3,23 @@ micronaut:
   application:
     name: santec
   server:
-    port: 8180
+    port: 8181
+    cors:
+      enabled: true
     max-request-size: '10MB'
     multipart:
       max-file-size: '10MB'
-    cors:
-      enabled: true
   router:
     static-resources:
       main:
         paths: classpath:views
         mapping: /main/**
 
-
-  views:
-    thymeleaf:
-      enabled: true
-
-
 datasources:
   default:
     db-type: postgres
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/santec_shop?preparedStatementCacheQueries=0
+    url: jdbc:postgresql://localhost:5432/santec_shop?preparedStatementCacheQueries=0
     driverClassName: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -35,11 +29,10 @@ datasources:
 flyway:
   datasources:
     default:
-      enabled: true
+      enabled: false
 
 upload:
-  imagePath: /Users/gali/IdeaProjects/upload/images
-  documentPath: /Users/gali/IdeaProjects/upload/docs
+  imagePath: /home/galikhan/upload/images
+  documentPath: /home/galikhan/upload/docs
 
-
-apiUrl: http://localhost:8180/
+apiUrl: http://89.46.33.174:8181/

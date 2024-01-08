@@ -49,8 +49,9 @@ public class CategoryRepository {
                 .set(CATEGORY.IS_REMOVED_, false)
                 .set(CATEGORY.LEVEL_, category.level())
                 .set(CATEGORY.IMAGE_, category.image())
-
+                .where(CATEGORY.ID_.eq(category.id()))
                 .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_, CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_, CATEGORY.IMAGE_)
+
                 .fetchOne(mapping(Category::new));
     }
 

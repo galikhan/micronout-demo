@@ -1,7 +1,7 @@
 #Tue Nov 14 09:03:05 GMT 2023
 micronaut:
   application:
-    name: micronout-demo
+    name: santec
   server:
     port: 8181
     cors:

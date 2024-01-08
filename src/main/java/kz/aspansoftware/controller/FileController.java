@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 
 import static kz.aspansoftware.enums.ContainerClass.*;
 
-@Controller("/upload")
+@Controller("/api/upload")
 public class FileController {
 
     @Value("${upload.imagePath}")
@@ -102,6 +102,12 @@ public class FileController {
     @Transactional
     public List<SantecFile> findByContainer(Long containerId) {
         return fileRepository.findByContainer(containerId);
+    }
+
+    @Get("/image/id/{id}")
+    @Transactional
+    public SantecFile findById(Long id) {
+        return fileRepository.findById(id);
     }
 
     @Get("/file/container/{containerId}/container-class/{containerClass}")

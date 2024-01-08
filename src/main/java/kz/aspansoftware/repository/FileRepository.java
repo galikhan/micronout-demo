@@ -48,7 +48,6 @@ public class FileRepository {
 
     public List<SantecFile> findByContainerAndClass(Long container, String containerClass) {
         return this.dsl
-
                 .selectFrom(FILE)
                 .where(FILE.CONTAINER_.eq(container).and(FILE.CONTAINER_CLASS_.eq(containerClass)))
                 .fetch().stream().map(SantecFile::toSantecFile)
@@ -57,5 +56,12 @@ public class FileRepository {
 
     public int delete(Long id) {
         return this.dsl.update(FILE).set(FILE.IS_REMOVED_, true).execute();
+    }
+
+    public SantecFile findById(Long id) {
+        return this.dsl
+                .selectFrom(FILE)
+                .where(FILE.ID_.eq(id))
+                .fetchOne(SantecFile::toSantecFile);
     }
 }
