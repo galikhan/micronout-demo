@@ -7,14 +7,16 @@ import org.jooq.Record;
 import java.time.LocalDateTime;
 
 @Serdeable
-public record Category(Long id, Long parent, String name, String description, Boolean isRemoved, Integer level, Long image) {
+public record Category(Long id, Long parent, String name, String description, Boolean isRemoved, Integer level, Long image, Boolean isSantec, Boolean isValtec) {
 
     public static Category toCategory(CategoryRecord record) {
         return new Category(record.getId_(), record.getParent_(),
                 record.getName_(), record.getDescription_(),
                 record.getIsRemoved_(),
                 record.getLevel_(),
-                record.getImage_()
+                record.getImage_(),
+                record.getIsSantec_(),
+                record.getIsValtec_()
         );
     }
 }

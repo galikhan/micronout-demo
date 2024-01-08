@@ -35,8 +35,12 @@ public class CategoryRepository {
                 .set(CATEGORY.CREATED_, LocalDateTime.now())
                 .set(CATEGORY.LEVEL_, category.level())
                 .set(CATEGORY.IMAGE_, category.image())
+                .set(CATEGORY.IS_VALTEC_, category.isValtec())
+                .set(CATEGORY.IS_SANTEC_, category.isSantec())
 
-                .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_, CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_, CATEGORY.IMAGE_)
+                .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_,
+                        CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_,
+                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_, CATEGORY.IS_VALTEC_)
                 .fetchOne(mapping(Category::new));
     }
 
@@ -49,9 +53,14 @@ public class CategoryRepository {
                 .set(CATEGORY.IS_REMOVED_, false)
                 .set(CATEGORY.LEVEL_, category.level())
                 .set(CATEGORY.IMAGE_, category.image())
-                .where(CATEGORY.ID_.eq(category.id()))
-                .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_, CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_, CATEGORY.IMAGE_)
+                .set(CATEGORY.IS_VALTEC_, category.isValtec())
+                .set(CATEGORY.IS_SANTEC_, category.isSantec())
 
+                .where(CATEGORY.ID_.eq(category.id()))
+
+                .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_,
+                        CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_,
+                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_, CATEGORY.IS_VALTEC_)
                 .fetchOne(mapping(Category::new));
     }
 
