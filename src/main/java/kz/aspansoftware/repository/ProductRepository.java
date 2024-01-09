@@ -2,6 +2,7 @@ package kz.aspansoftware.repository;
 
 import jakarta.inject.Singleton;
 import kz.aspansoftware.records.Product;
+import kz.aspansoftware.records.ProductExtended;
 import kz.jooq.model.tables.records.ProductRecord;
 import org.jooq.DSLContext;
 import org.jooq.SelectConditionStep;
@@ -9,6 +10,7 @@ import org.jooq.SelectConditionStep;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static kz.jooq.model.tables.File.FILE;
 import static kz.jooq.model.tables.Product.PRODUCT;
 import static kz.jooq.model.tables.ProductSize.PRODUCT_SIZE;
 import static org.jooq.Records.mapping;
@@ -114,8 +116,10 @@ public class ProductRepository {
     }
 
     public List<Product> findByCategoryAndParams(Long categoryId, Boolean isSantec, Boolean isValtec) {
+        
         SelectConditionStep<ProductRecord> query = this.dsl.selectFrom(PRODUCT)
                 .where(PRODUCT.CATEGORY_.eq(categoryId));
+
         if (isSantec && !isValtec) {
             query.and(PRODUCT.IS_SANTEC_.eq(true));
         } else if(!isSantec && isValtec) {
@@ -127,10 +131,31 @@ public class ProductRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductExtended> findByCategoryAndParamsExtendedWithFilename(Long categoryId, Boolean isSantec, Boolean isValtec) {
+
+        var query
+                = this.dsl
+                .select(PRODUCT.fields())
+                .select(FILE.fields(FILE.FILENAME_)).distinctOn(PRODUCT.ID_)
+                .from(PRODUCT).leftJoin(FILE)
+                .on(FILE.CONTAINER_.eq(PRODUCT.ID_).and(FILE.IS_REMOVED_.eq(false).and(FILE.FILENAME_.startsWith("thumbnail"))))
+                .where(PRODUCT.CATEGORY_.eq(categoryId));
+
+        if (isSantec && !isValtec) {
+            query.and(PRODUCT.IS_SANTEC_.eq(true));
+        } else if(!isSantec && isValtec) {
+            query.and(PRODUCT.IS_SANTEC_.eq(false).or(PRODUCT.IS_SANTEC_.isNull()));
+        }
+        return query.orderBy(PRODUCT.ID_.desc())
+                .fetch()
+                .stream().map(ProductExtended::toProduct)
+                .collect(Collectors.toList());
+    }
+
     public List<Product> searchByQuery(String searchQuery) {
         //1 search in titles
         //2 search in description
-        //2 search in article
+        //2 search in article and size
         var psizeQuery = this.dsl.selectFrom(PRODUCT_SIZE)
                 .where(PRODUCT_SIZE.ARTICLE_.likeIgnoreCase("%"+searchQuery+"%"))
                 .or(PRODUCT_SIZE.SIZE_.likeIgnoreCase("%"+searchQuery+"%")).fetch().stream().map(i -> i.getProduct_()).collect(Collectors.toList());
@@ -141,4 +166,24 @@ public class ProductRepository {
                 .or(PRODUCT.ID_.in(psizeQuery)).stream().map(Product::toProduct).collect(Collectors.toList());
         return result;
     }
+
+    public List<ProductExtended> searchByQueryExtendedWithFilename(String searchQuery) {
+        //1 search in titles
+        //2 search in description
+        //2 search in article and size
+        var psizeQuery = this.dsl.selectFrom(PRODUCT_SIZE)
+                .where(PRODUCT_SIZE.ARTICLE_.likeIgnoreCase("%"+searchQuery+"%"))
+                .or(PRODUCT_SIZE.SIZE_.likeIgnoreCase("%"+searchQuery+"%")).fetch().stream().map(i -> i.getProduct_()).collect(Collectors.toList());
+
+
+        var result = this.dsl.select(PRODUCT.fields()).select(FILE.fields(FILE.FILENAME_)).distinctOn(PRODUCT.ID_)
+                        .from(PRODUCT).leftJoin(FILE)
+                        .on(FILE.CONTAINER_.eq(PRODUCT.ID_).and(FILE.IS_REMOVED_.eq(false).and(FILE.FILENAME_.startsWith("thumbnail"))))
+                        .where(PRODUCT.NAME_.likeIgnoreCase("%" + searchQuery + "%"))
+                        .or(PRODUCT.DESCRIPTION_.likeIgnoreCase("%" + searchQuery + "%"))
+                        .or(PRODUCT.ID_.in(psizeQuery)).fetchSize(30);
+        return result.stream().map(ProductExtended::toProduct).collect(Collectors.toList());
+    }
+
+
 }

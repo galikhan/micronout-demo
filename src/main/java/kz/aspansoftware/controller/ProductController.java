@@ -12,6 +12,7 @@ import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.transaction.annotation.Transactional;
 import kz.aspansoftware.records.Page;
 import kz.aspansoftware.records.Product;
+import kz.aspansoftware.records.ProductExtended;
 import kz.aspansoftware.repository.ProductRepository;
 import kz.aspansoftware.service.ProductPagination;
 
@@ -51,6 +52,12 @@ public class ProductController {
         return this.repository.searchByQuery(query);
     }
 
+    @Get("/search-ext")
+    @Connectable
+    public  List<ProductExtended> searchExtByQuery(@QueryValue String query) {
+        return this.repository.searchByQueryExtendedWithFilename(query);
+    }
+
     @Post
     @Connectable
     public Product create(@Body Product product) {
@@ -71,14 +78,15 @@ public class ProductController {
 
     @Get("/category/{categoryId}")
     @Connectable
-    public List<Product> findByCategory(@PathVariable Long categoryId,
+    public List<ProductExtended> findByCategory(@PathVariable Long categoryId,
                                         @QueryValue Optional<Boolean> isSantec,
                                         @QueryValue Optional<Boolean> isValtec
                                         ) {
-        if(isSantec.isPresent() || isValtec.isPresent()) {
-            return this.repository.findByCategoryAndParams(categoryId, isSantec.get(), isValtec.get());
-        }
-        return this.repository.findByCategory(categoryId);
+//        if(isSantec.isPresent() || isValtec.isPresent()) {
+//            return this.repository.findByCategoryAndParams(categoryId, isSantec.get(), isValtec.get());
+            return this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId, isSantec.get(), isValtec.get());
+//        }
+//        return this.repository.findByCategory(categoryId);
     }
 
 }
