@@ -45,6 +45,12 @@ public class ProductController {
         return this.repository.findById(id);
     }
 
+    @Get("/search")
+    @Connectable
+    public  List<Product> searchByQuery(@QueryValue String query) {
+        return this.repository.searchByQuery(query);
+    }
+
     @Post
     @Connectable
     public Product create(@Body Product product) {
@@ -65,7 +71,13 @@ public class ProductController {
 
     @Get("/category/{categoryId}")
     @Connectable
-    public List<Product> findByCategory(@PathVariable Long categoryId) {
+    public List<Product> findByCategory(@PathVariable Long categoryId,
+                                        @QueryValue Optional<Boolean> isSantec,
+                                        @QueryValue Optional<Boolean> isValtec
+                                        ) {
+        if(isSantec.isPresent() || isValtec.isPresent()) {
+            return this.repository.findByCategoryAndParams(categoryId, isSantec.get(), isValtec.get());
+        }
         return this.repository.findByCategory(categoryId);
     }
 

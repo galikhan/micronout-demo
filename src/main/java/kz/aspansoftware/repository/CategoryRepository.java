@@ -7,6 +7,7 @@ import kz.jooq.model.tables.records.FileRecord;
 import org.jooq.DSLContext;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,6 +81,26 @@ public class CategoryRepository {
                 .leftJoin(FILE)
                 .on(CATEGORY.IMAGE_.eq(FILE.ID_))
                 .where(CATEGORY.PARENT_.eq(parent).and(CATEGORY.IS_REMOVED_.eq(false)))
+                .orderBy(CATEGORY.NAME_)
+                .fetchGroups(
+                        c -> c.into(CATEGORY),
+                        f -> f.into(FILE)
+                );
+    }
+
+    public Map<CategoryRecord, List<FileRecord>> findCategoryAndImageByParams(Long parent, Boolean isSantec, Boolean isValtec) {
+
+        return this.dsl
+                .select(CATEGORY.fields())
+                .select(FILE.fields())
+                .from(CATEGORY)
+                .leftJoin(FILE)
+                .on(CATEGORY.IMAGE_.eq(FILE.ID_))
+                .where(
+                        CATEGORY.PARENT_.eq(parent)
+                                .and(CATEGORY.IS_REMOVED_.eq(false))
+                                .and(CATEGORY.IS_SANTEC_.eq(isSantec).or(CATEGORY.IS_VALTEC_.eq(isValtec)))
+                )
                 .orderBy(CATEGORY.NAME_)
                 .fetchGroups(
                         c -> c.into(CATEGORY),

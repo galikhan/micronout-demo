@@ -2,12 +2,15 @@ package kz.aspansoftware.repository;
 
 import jakarta.inject.Singleton;
 import kz.aspansoftware.records.Product;
+import kz.jooq.model.tables.records.ProductRecord;
 import org.jooq.DSLContext;
+import org.jooq.SelectConditionStep;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static kz.jooq.model.tables.Product.PRODUCT;
+import static kz.jooq.model.tables.ProductSize.PRODUCT_SIZE;
 import static org.jooq.Records.mapping;
 
 @Singleton
@@ -95,18 +98,47 @@ public class ProductRepository {
         var result = this.dsl.selectFrom(PRODUCT)
                 .where(PRODUCT.ID_.eq(id))
                 .fetchOne();
-        if(result != null) {
+        if (result != null) {
             return Product.toProduct(result);
         }
         return null;
     }
 
-    public List<Product>  findByCategory(Long categoryId) {
+    public List<Product> findByCategory(Long categoryId) {
         return this.dsl.selectFrom(PRODUCT)
                 .where(PRODUCT.CATEGORY_.eq(categoryId))
                 .orderBy(PRODUCT.ID_.desc())
                 .fetch()
                 .stream().map(Product::toProduct)
                 .collect(Collectors.toList());
+    }
+
+    public List<Product> findByCategoryAndParams(Long categoryId, Boolean isSantec, Boolean isValtec) {
+        SelectConditionStep<ProductRecord> query = this.dsl.selectFrom(PRODUCT)
+                .where(PRODUCT.CATEGORY_.eq(categoryId));
+        if (isSantec && !isValtec) {
+            query.and(PRODUCT.IS_SANTEC_.eq(true));
+        } else if(!isSantec && isValtec) {
+            query.and(PRODUCT.IS_SANTEC_.eq(false).or(PRODUCT.IS_SANTEC_.isNull()));
+        }
+        return query.orderBy(PRODUCT.ID_.desc())
+                .fetch()
+                .stream().map(Product::toProduct)
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> searchByQuery(String searchQuery) {
+        //1 search in titles
+        //2 search in description
+        //2 search in article
+        var psizeQuery = this.dsl.selectFrom(PRODUCT_SIZE)
+                .where(PRODUCT_SIZE.ARTICLE_.likeIgnoreCase("%"+searchQuery+"%"))
+                .or(PRODUCT_SIZE.SIZE_.likeIgnoreCase("%"+searchQuery+"%")).fetch().stream().map(i -> i.getProduct_()).collect(Collectors.toList());
+
+        var result = this.dsl.selectFrom(PRODUCT)
+                .where(PRODUCT.NAME_.likeIgnoreCase("%"+searchQuery+"%"))
+                .or(PRODUCT.DESCRIPTION_.likeIgnoreCase("%"+searchQuery+"%"))
+                .or(PRODUCT.ID_.in(psizeQuery)).stream().map(Product::toProduct).collect(Collectors.toList());
+        return result;
     }
 }

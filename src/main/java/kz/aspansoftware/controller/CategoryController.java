@@ -9,17 +9,23 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
 import jakarta.inject.Inject;
 import kz.aspansoftware.records.Category;
 import kz.aspansoftware.records.CategoryAndImage;
 import kz.aspansoftware.records.SantecFile;
 import kz.aspansoftware.repository.CategoryRepository;
+import kz.jooq.model.tables.records.CategoryRecord;
+import kz.jooq.model.tables.records.FileRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller("/api/category")
 @Introspected
@@ -50,8 +56,16 @@ public class CategoryController {
 
     @Get("/extended/parent/{id}")
     @Connectable
-    public List<CategoryAndImage> findCategoryAndImagePyParent(@PathVariable Long id) {
-        var map = this.repository.findCategoryAndImagePyParent(id);
+    public List<CategoryAndImage> findCategoryAndImagePyParent(@PathVariable Long id,
+                                                               @QueryValue Optional<Boolean> isSantec,
+                                                               @QueryValue Optional<Boolean> isValtec) {
+
+        var map = new HashMap<CategoryRecord, List<FileRecord>>();
+        if(isSantec.isEmpty() && isValtec.isEmpty()) {
+            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImagePyParent(id);
+        } else {
+            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImageByParams(id, isSantec.get(), isValtec.get());
+        }
         var list = new ArrayList<CategoryAndImage>();
         map.entrySet().stream().forEach(i -> {
             var category = Category.toCategory(i.getKey());
