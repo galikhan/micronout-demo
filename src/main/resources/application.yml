@@ -21,6 +21,11 @@ micronaut:
       enabled: true
 
   security:
+    intercept-url-map:
+      - pattern: /api/upload/**
+        httpMethod: POST
+        access:
+          - isAnonymous()
     authentication: bearer
     token:
       jwt:

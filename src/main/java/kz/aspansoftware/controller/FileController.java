@@ -1,6 +1,7 @@
 package kz.aspansoftware.controller;
 
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.connection.annotation.Connectable;
 import io.micronaut.http.HttpResponse;
@@ -16,6 +17,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.transaction.annotation.Transactional;
 import io.micronaut.views.View;
 import io.reactivex.rxjava3.core.Flowable;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import kz.aspansoftware.records.SantecFile;
 import kz.aspansoftware.repository.FileRepository;
@@ -38,8 +40,10 @@ import java.util.concurrent.ExecutionException;
 
 import static kz.aspansoftware.enums.ContainerClass.*;
 
-@Secured(SecurityRule.IS_ANONYMOUS)
+//@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/upload")
+@Introspected
+//@PermitAll
 public class FileController {
 
     @Value("${upload.imagePath}")
@@ -54,15 +58,17 @@ public class FileController {
     FileRepository fileRepository;
     private Logger log = LoggerFactory.getLogger(FileController.class);
 
-    @Get("/")
-    @View("/upload.html")
-    public HttpResponse<?> index() {
-        return HttpResponse.ok(CollectionUtils.mapOf("apiUrl", apiUrl));
-    }
+//    @Get
+//    @View("/upload.html")
+//    public HttpResponse<?> index() {
+//        return HttpResponse.ok(CollectionUtils.mapOf("apiUrl", apiUrl));
+//    }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Post("/image")
     @Consumes(value = MediaType.MULTIPART_FORM_DATA)
     @Connectable
+    @PermitAll
     public SantecFile uploadImage(CompletedFileUpload file, Long container) {
         return handleImage(file, container);
     }
