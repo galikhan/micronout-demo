@@ -89,8 +89,8 @@ public class CategoryRepository {
     }
 
     public Map<CategoryRecord, List<FileRecord>> findCategoryAndImageByParams(Long parent, Boolean isSantec, Boolean isValtec) {
-
-        return this.dsl
+        System.out.println("isSantec | isValtec = " +  isSantec + " | " + isValtec);
+        var query = this.dsl
                 .select(CATEGORY.fields())
                 .select(FILE.fields())
                 .from(CATEGORY)
@@ -99,13 +99,16 @@ public class CategoryRepository {
                 .where(
                         CATEGORY.PARENT_.eq(parent)
                                 .and(CATEGORY.IS_REMOVED_.eq(false))
-                                .and(CATEGORY.IS_SANTEC_.eq(isSantec).or(CATEGORY.IS_VALTEC_.eq(isValtec)))
+                                .and(CATEGORY.IS_SANTEC_.eq(isSantec).and(CATEGORY.IS_VALTEC_.eq(isValtec)))
                 )
-                .orderBy(CATEGORY.NAME_)
-                .fetchGroups(
+                .orderBy(CATEGORY.NAME_);
+
+        System.out.println(query);
+        return query.fetchGroups(
                         c -> c.into(CATEGORY),
                         f -> f.into(FILE)
                 );
+
     }
 
     public List<Category> findLevelCategoriesById(Long id) {

@@ -31,6 +31,9 @@ dependencies {
     implementation("io.micronaut.rxjava3:micronaut-rxjava3")
     implementation("io.micronaut.views:micronaut-views-thymeleaf")
 
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.yaml:snakeyaml")
     testImplementation("org.assertj:assertj-core")

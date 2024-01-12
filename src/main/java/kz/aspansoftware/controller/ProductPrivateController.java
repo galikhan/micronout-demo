@@ -21,44 +21,45 @@ import kz.aspansoftware.service.ProductPagination;
 import java.util.List;
 import java.util.Optional;
 
-@Secured(SecurityRule.IS_ANONYMOUS)
-@Controller("/api/product")
-public class ProductController {
+@Secured(SecurityRule.IS_AUTHENTICATED)
+@Controller("/api/private/product/")
+public class ProductPrivateController {
 
     ProductRepository repository;
     ProductPagination pagination;
 
-    public ProductController(ProductRepository repository, ProductPagination pagination) {
+    public ProductPrivateController(ProductRepository repository, ProductPagination pagination) {
         this.repository = repository;
         this.pagination = pagination;
     }
 
-    @Get("/id/{id}")
-    @Connectable
-    public Product findById(@PathVariable Long id) {
-        return this.repository.findById(id);
-    }
-
-    @Get("/search")
-    @Connectable
-    public List<Product> searchByQuery(@QueryValue String query) {
-        return this.repository.searchByQuery(query);
-    }
-
-    @Get("/search-ext")
-    @Connectable
-    public List<ProductExtended> searchExtByQuery(@QueryValue String query) {
-        return this.repository.searchByQueryExtendedWithFilename(query);
-    }
-
-
-    @Get("/category/{categoryId}")
-    @Connectable
-    public List<ProductExtended> findByCategory(@PathVariable Long categoryId,
-                                                @QueryValue Optional<Boolean> isSantec,
-                                                @QueryValue Optional<Boolean> isValtec
+    @Get("/page")
+    @Transactional
+    public Page findByPage(
+            @QueryValue Optional<Long> first,
+            @QueryValue Optional<Long> last,
+            @QueryValue Integer size
     ) {
-        return this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId, isSantec.get(), isValtec.get());
+        return this.pagination.findPageByParams(first.orElse(null), last.orElse(null), size);
     }
+
+    @Post
+    @Connectable
+    public Product create(@Body Product product) {
+        return this.repository.create(product);
+    }
+
+    @Put
+    @Connectable
+    public Product update(@Body Product product) {
+        return this.repository.update(product);
+    }
+
+    @Delete("/id/{id}")
+    @Connectable
+    public int delete(@PathVariable Long id) {
+        return this.repository.delete(id);
+    }
+
 
 }

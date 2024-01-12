@@ -11,6 +11,8 @@ import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.multipart.CompletedFileUpload;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.transaction.annotation.Transactional;
 import io.micronaut.views.View;
 import io.reactivex.rxjava3.core.Flowable;
@@ -36,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 
 import static kz.aspansoftware.enums.ContainerClass.*;
 
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/upload")
 public class FileController {
 

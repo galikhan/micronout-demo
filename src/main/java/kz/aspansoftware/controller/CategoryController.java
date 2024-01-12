@@ -10,6 +10,8 @@ import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import kz.aspansoftware.records.Category;
 import kz.aspansoftware.records.CategoryAndImage;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/category")
 @Introspected
 public class CategoryController {
@@ -36,23 +39,6 @@ public class CategoryController {
     @Inject
     private CategoryRepository repository;
 
-    @Post("/")
-    @Connectable
-    public Category create(@Body Category category) {
-        return this.repository.create(category);
-    }
-
-    @Put("/")
-    @Connectable
-    public Category update(@Body Category category) {
-        return this.repository.update(category);
-    }
-
-    @Get("/parent/{id}")
-    @Connectable
-    public List<Category> findCategoryPyParent(@PathVariable Long id) {
-        return this.repository.findCategoryPyParent(id);
-    }
 
     @Get("/extended/parent/{id}")
     @Connectable
@@ -62,7 +48,7 @@ public class CategoryController {
 
         var map = new HashMap<CategoryRecord, List<FileRecord>>();
         if(isSantec.isEmpty() && isValtec.isEmpty()) {
-            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImagePyParent(id);
+//            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImagePyParent(id);
         } else {
             map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImageByParams(id, isSantec.get(), isValtec.get());
         }
@@ -89,12 +75,4 @@ public class CategoryController {
     public List<Category> findFirstLevelCategoriesByChildId(@PathVariable Long id) {
         return this.repository.findFirstLevelCategoriesByChildId(id);
     }
-
-
-    @Delete("/{id}")
-    @Connectable
-    public int delete(@PathVariable Long id) {
-        return this.repository.delete(id);
-    }
-
 }
