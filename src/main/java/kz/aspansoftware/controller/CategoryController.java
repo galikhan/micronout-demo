@@ -2,14 +2,9 @@ package kz.aspansoftware.controller;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.connection.annotation.Connectable;
-import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
-import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
@@ -24,10 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/category")
@@ -42,21 +34,15 @@ public class CategoryController {
 
     @Get("/extended/parent/{id}")
     @Connectable
-    public List<CategoryAndImage> findCategoryAndImagePyParent(@PathVariable Long id,
-                                                               @QueryValue Optional<Boolean> isSantec,
-                                                               @QueryValue Optional<Boolean> isValtec) {
+    public List<CategoryAndImage> findCategoryAndImagePyParent(@PathVariable Long id) {
 
         var map = new HashMap<CategoryRecord, List<FileRecord>>();
-        if(isSantec.isEmpty() && isValtec.isEmpty()) {
-//            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImagePyParent(id);
-        } else {
-            map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImageByParams(id, isSantec.get(), isValtec.get());
-        }
+        map = (HashMap<CategoryRecord, List<FileRecord>>) this.repository.findCategoryAndImageByParams(id);
         var list = new ArrayList<CategoryAndImage>();
         map.entrySet().stream().forEach(i -> {
             var category = Category.toCategory(i.getKey());
             SantecFile file = null;
-            if(i.getValue() != null && i.getValue().size() > 0) {
+            if (i.getValue() != null && i.getValue().size() > 0) {
                 file = SantecFile.toSantecFile(i.getValue().get(0));
             }
             list.add(new CategoryAndImage(category, file));

@@ -25,7 +25,6 @@ public class CategoryRepository {
         this.dsl = dsl;
     }
 
-    //    Category(Long id, Long parent, String name, String description, Boolean isRemoved) {
     public Category create(Category category) {
         return this.dsl
                 .insertInto(CATEGORY)
@@ -38,10 +37,14 @@ public class CategoryRepository {
                 .set(CATEGORY.IMAGE_, category.image())
                 .set(CATEGORY.IS_VALTEC_, category.isValtec())
                 .set(CATEGORY.IS_SANTEC_, category.isSantec())
+                .set(CATEGORY.ORDER_, category.order())
 
                 .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_,
                         CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_,
-                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_, CATEGORY.IS_VALTEC_)
+                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_,
+                        CATEGORY.IS_VALTEC_,
+                        CATEGORY.ORDER_
+                )
                 .fetchOne(mapping(Category::new));
     }
 
@@ -56,12 +59,13 @@ public class CategoryRepository {
                 .set(CATEGORY.IMAGE_, category.image())
                 .set(CATEGORY.IS_VALTEC_, category.isValtec())
                 .set(CATEGORY.IS_SANTEC_, category.isSantec())
-
+                .set(CATEGORY.ORDER_, category.order())
                 .where(CATEGORY.ID_.eq(category.id()))
 
                 .returningResult(CATEGORY.ID_, CATEGORY.PARENT_, CATEGORY.NAME_,
                         CATEGORY.DESCRIPTION_, CATEGORY.IS_REMOVED_, CATEGORY.LEVEL_,
-                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_, CATEGORY.IS_VALTEC_)
+                        CATEGORY.IMAGE_, CATEGORY.IS_SANTEC_, CATEGORY.IS_VALTEC_,
+                        CATEGORY.ORDER_)
                 .fetchOne(mapping(Category::new));
     }
 
@@ -70,6 +74,7 @@ public class CategoryRepository {
         return this.dsl
                 .selectFrom(CATEGORY)
                 .where(CATEGORY.PARENT_.eq(parent).and(CATEGORY.IS_REMOVED_.eq(false)))
+                .orderBy(CATEGORY.ORDER_)
                 .fetch().stream().map(Category::toCategory).collect(Collectors.toList());
     }
 
@@ -81,15 +86,14 @@ public class CategoryRepository {
                 .leftJoin(FILE)
                 .on(CATEGORY.IMAGE_.eq(FILE.ID_))
                 .where(CATEGORY.PARENT_.eq(parent).and(CATEGORY.IS_REMOVED_.eq(false)))
-                .orderBy(CATEGORY.NAME_)
+                .orderBy(CATEGORY.ORDER_)
                 .fetchGroups(
                         c -> c.into(CATEGORY),
                         f -> f.into(FILE)
                 );
     }
 
-    public Map<CategoryRecord, List<FileRecord>> findCategoryAndImageByParams(Long parent, Boolean isSantec, Boolean isValtec) {
-        System.out.println("isSantec | isValtec = " +  isSantec + " | " + isValtec);
+    public Map<CategoryRecord, List<FileRecord>> findCategoryAndImageByParams(Long parent) {
         var query = this.dsl
                 .select(CATEGORY.fields())
                 .select(FILE.fields())
@@ -99,11 +103,9 @@ public class CategoryRepository {
                 .where(
                         CATEGORY.PARENT_.eq(parent)
                                 .and(CATEGORY.IS_REMOVED_.eq(false))
-                                .and(CATEGORY.IS_SANTEC_.eq(isSantec).and(CATEGORY.IS_VALTEC_.eq(isValtec)))
                 )
-                .orderBy(CATEGORY.NAME_);
+                .orderBy(CATEGORY.ORDER_);
 
-        System.out.println(query);
         return query.fetchGroups(
                         c -> c.into(CATEGORY),
                         f -> f.into(FILE)
@@ -116,6 +118,7 @@ public class CategoryRepository {
         return this.dsl
                 .selectFrom(CATEGORY)
                 .where(CATEGORY.PARENT_.eq(parent).and(CATEGORY.IS_REMOVED_.eq(false)))
+                .orderBy(CATEGORY.ORDER_)
                 .fetch().stream().map(Category::toCategory).collect(Collectors.toList());
     }
 
@@ -125,6 +128,7 @@ public class CategoryRepository {
         return this.dsl
                 .selectFrom(CATEGORY)
                 .where(CATEGORY.PARENT_.eq(firstLevelParent).and(CATEGORY.IS_REMOVED_.eq(false)))
+                .orderBy(CATEGORY.ORDER_)
                 .fetch().stream().map(Category::toCategory).collect(Collectors.toList());
     }
 
