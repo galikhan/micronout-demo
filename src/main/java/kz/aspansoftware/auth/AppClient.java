@@ -6,6 +6,7 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Header;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.http.server.cors.CrossOrigin;
 import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.security.token.render.BearerAccessRefreshToken;
 
@@ -13,6 +14,7 @@ import static io.micronaut.http.HttpHeaders.AUTHORIZATION;
 import static io.micronaut.http.MediaType.TEXT_PLAIN;
 
 @Client("/")
+@CrossOrigin
 public interface AppClient {
 
     @Post("/login")

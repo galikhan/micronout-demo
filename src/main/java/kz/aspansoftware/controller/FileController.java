@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 import static kz.aspansoftware.enums.ContainerClass.*;
 
-//@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/upload")
 @Introspected
 //@PermitAll
