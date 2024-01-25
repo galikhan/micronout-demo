@@ -1,8 +1,6 @@
 package kz.aspansoftware.repository;
 
-import io.micronaut.json.tree.JsonArray;
 import jakarta.inject.Singleton;
-import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.SantecFile;
 import org.jooq.DSLContext;
 
@@ -12,7 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static kz.jooq.model.tables.File.FILE;
-import static kz.jooq.model.tables.Product.PRODUCT;
 import static org.jooq.Records.mapping;
 
 @Singleton
@@ -55,7 +52,10 @@ public class FileRepository {
     }
 
     public int delete(Long id) {
-        return this.dsl.update(FILE).set(FILE.IS_REMOVED_, true).execute();
+        return this.dsl.update(FILE)
+                .set(FILE.IS_REMOVED_, true)
+                .where(FILE.ID_.eq(id))
+                .execute();
     }
 
     public SantecFile findById(Long id) {
@@ -63,5 +63,12 @@ public class FileRepository {
                 .selectFrom(FILE)
                 .where(FILE.ID_.eq(id))
                 .fetchOne(SantecFile::toSantecFile);
+    }
+
+    public int updateDocumentDescription(Long id, String description) {
+        return this.dsl.update(FILE)
+                .set(FILE.DESCRIPTION_, description)
+                .where(FILE.ID_.eq(id))
+                .execute();
     }
 }

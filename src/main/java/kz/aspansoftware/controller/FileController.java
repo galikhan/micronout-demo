@@ -2,20 +2,18 @@ package kz.aspansoftware.controller;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Introspected;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.connection.annotation.Connectable;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Consumes;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
 import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.transaction.annotation.Transactional;
-import io.micronaut.views.View;
 import io.reactivex.rxjava3.core.Flowable;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
@@ -43,7 +41,6 @@ import static kz.aspansoftware.enums.ContainerClass.*;
 @Secured(SecurityRule.IS_ANONYMOUS)
 @Controller("/api/upload")
 @Introspected
-//@PermitAll
 public class FileController {
 
     @Value("${upload.imagePath}")
@@ -123,6 +120,12 @@ public class FileController {
     @Transactional
     public List<SantecFile> findByContainer(Long containerId, String containerClass) {
         return fileRepository.findByContainerAndClass(containerId, containerClass);
+    }
+
+    @Put("/document/description")
+    @Transactional
+    public int updateDocumentDescription(Long id, String description) {
+        return fileRepository.updateDocumentDescription(id, description);
     }
 
     private SantecFile handleDocument(CompletedFileUpload file, Long container) {
