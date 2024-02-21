@@ -33,7 +33,9 @@ public class ProductSizeRepository {
         return this.dsl
                 .selectFrom(PRODUCT_SIZE)
                 .where(PRODUCT_SIZE.PRODUCT_.eq(productId))
-                .fetch().stream().map(p -> ProductSize.toProduct(p)).collect(Collectors.toList());
+                .orderBy(PRODUCT_SIZE.ID_)
+                .fetch().stream().map(p -> ProductSize.toProduct(p))
+                .collect(Collectors.toList());
     }
 
     public ProductSize update(ProductSize productSize) {

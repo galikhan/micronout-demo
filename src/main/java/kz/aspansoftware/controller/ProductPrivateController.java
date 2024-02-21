@@ -17,6 +17,8 @@ import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.ProductExtended;
 import kz.aspansoftware.repository.ProductRepository;
 import kz.aspansoftware.service.ProductPagination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,9 @@ public class ProductPrivateController {
 
     ProductRepository repository;
     ProductPagination pagination;
+
+    private Logger log = LoggerFactory.getLogger(CategoryController.class);
+
 
     public ProductPrivateController(ProductRepository repository, ProductPagination pagination) {
         this.repository = repository;
@@ -52,6 +57,7 @@ public class ProductPrivateController {
     @Put
     @Connectable
     public Product update(@Body Product product) {
+        log.info("product {}", product);
         return this.repository.update(product);
     }
 

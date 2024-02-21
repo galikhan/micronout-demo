@@ -32,7 +32,6 @@ public class ProductRepository {
                 .set(PRODUCT.CATEGORY_, product.category())
                 .set(PRODUCT.VIDEO_, product.video())
                 .set(PRODUCT.IS_NEW_, product.isNew())
-                .set(PRODUCT.IS_REMOVED_, product.isRemoved())
                 .set(PRODUCT.IS_SANTEC_, product.isSantec())
                 .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
                 .fetchOne(mapping(Product::new));
@@ -46,7 +45,7 @@ public class ProductRepository {
                 .set(PRODUCT.CATEGORY_, product.category())
                 .set(PRODUCT.VIDEO_, product.video())
                 .set(PRODUCT.IS_NEW_, product.isNew())
-                .set(PRODUCT.IS_REMOVED_, product.isRemoved())
+                .set(PRODUCT.IS_REMOVED_, (product.isRemoved() != null ? product.isRemoved() : false))
                 .set(PRODUCT.IS_SANTEC_, product.isSantec())
                 .where(PRODUCT.ID_.eq(product.id()))
                 .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
@@ -137,9 +136,14 @@ public class ProductRepository {
                 = this.dsl
                 .select(PRODUCT.fields())
                 .select(FILE.fields(FILE.FILENAME_)).distinctOn(PRODUCT.ID_)
-                .from(PRODUCT).leftJoin(FILE)
-                .on(FILE.CONTAINER_.eq(PRODUCT.ID_).and(FILE.IS_REMOVED_.eq(false).and(FILE.FILENAME_.startsWith("thumbnail"))))
-                .where(PRODUCT.CATEGORY_.eq(categoryId));
+                .from(PRODUCT)
+                .leftJoin(FILE)
+                .on(FILE.CONTAINER_
+                        .eq(PRODUCT.ID_)
+                        .and(FILE.IS_REMOVED_.eq(false)
+                        .and(FILE.FILENAME_.startsWith("thumbnail"))))
+                .where(PRODUCT.CATEGORY_.eq(categoryId))
+                .and(PRODUCT.IS_REMOVED_.eq(false));
 
         if (isSantec && !isValtec) {
             query.and(PRODUCT.IS_SANTEC_.eq(true));

@@ -39,6 +39,7 @@ public class FileRepository {
 
                 .selectFrom(FILE)
                 .where(FILE.CONTAINER_.eq(container))
+                .and(FILE.IS_REMOVED_.eq(false))
                 .fetch().stream().map(SantecFile::toSantecFile)
                 .collect(Collectors.toList());
     }
@@ -47,6 +48,7 @@ public class FileRepository {
         return this.dsl
                 .selectFrom(FILE)
                 .where(FILE.CONTAINER_.eq(container).and(FILE.CONTAINER_CLASS_.eq(containerClass)))
+                .and(FILE.IS_REMOVED_.eq(false))
                 .fetch().stream().map(SantecFile::toSantecFile)
                 .collect(Collectors.toList());
     }
