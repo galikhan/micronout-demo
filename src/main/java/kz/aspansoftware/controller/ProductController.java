@@ -58,7 +58,7 @@ public class ProductController {
                                                 @QueryValue Optional<Boolean> isSantec,
                                                 @QueryValue Optional<Boolean> isValtec
     ) {
-        return this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId, isSantec.get(), isValtec.get());
+        return this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId);
     }
 
 }
