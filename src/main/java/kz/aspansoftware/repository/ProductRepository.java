@@ -142,6 +142,7 @@ public class ProductRepository {
                                         .from(FILE)
                                         .where(FILE.CONTAINER_.eq(PRODUCT.ID_))
                                         .and(FILE.FILENAME_.startsWith("thumbnail"))
+                                        .and(FILE.IS_REMOVED_.eq(false))
                         .orderBy(FILE.ID_).limit(1)
                         ).as("filename_")
                 )
