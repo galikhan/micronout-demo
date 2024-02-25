@@ -15,6 +15,7 @@ import io.micronaut.transaction.annotation.Transactional;
 import kz.aspansoftware.records.Page;
 import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.ProductExtended;
+import kz.aspansoftware.records.ProductWithBrandFilter;
 import kz.aspansoftware.repository.ProductRepository;
 import kz.aspansoftware.service.ProductPagination;
 import org.slf4j.Logger;
@@ -67,5 +68,10 @@ public class ProductPrivateController {
         return this.repository.delete(id);
     }
 
+    @Get("/category/{categoryId}")
+    @Connectable
+    public List<ProductExtended> findByCategory(@PathVariable Long categoryId) {
+        return  this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId);
+    }
 
 }

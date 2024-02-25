@@ -1,6 +1,7 @@
 package kz.aspansoftware.repository;
 
 import jakarta.inject.Singleton;
+import kz.aspansoftware.records.Brand;
 import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.ProductExtended;
 import kz.jooq.model.tables.records.ProductRecord;
@@ -11,6 +12,7 @@ import org.jooq.impl.DSL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static kz.jooq.model.tables.Brand.BRAND;
 import static kz.jooq.model.tables.File.FILE;
 import static kz.jooq.model.tables.Product.PRODUCT;
 import static kz.jooq.model.tables.ProductSize.PRODUCT_SIZE;
@@ -34,7 +36,8 @@ public class ProductRepository {
                 .set(PRODUCT.VIDEO_, product.video())
                 .set(PRODUCT.IS_NEW_, product.isNew())
                 .set(PRODUCT.IS_SANTEC_, product.isSantec())
-                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
+                .set(PRODUCT.BRAND_, product.brand())
+                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_, PRODUCT.BRAND_)
                 .fetchOne(mapping(Product::new));
     }
 
@@ -48,8 +51,9 @@ public class ProductRepository {
                 .set(PRODUCT.IS_NEW_, product.isNew())
                 .set(PRODUCT.IS_REMOVED_, (product.isRemoved() != null ? product.isRemoved() : false))
                 .set(PRODUCT.IS_SANTEC_, product.isSantec())
+                .set(PRODUCT.BRAND_, product.brand())
                 .where(PRODUCT.ID_.eq(product.id()))
-                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_)
+                .returningResult(PRODUCT.ID_, PRODUCT.NAME_, PRODUCT.DESCRIPTION_, PRODUCT.CATEGORY_, PRODUCT.VIDEO_, PRODUCT.IS_NEW_, PRODUCT.IS_REMOVED_, PRODUCT.IS_SANTEC_, PRODUCT.BRAND_)
                 .fetchOne(mapping(Product::new));
     }
 
@@ -155,6 +159,24 @@ public class ProductRepository {
                 .stream().map(ProductExtended::toProduct)
                 .collect(Collectors.toList());
     }
+
+    public List<Brand> findListOfBrandsInProductsForFiltering(Long categoryId) {
+        return this.dsl
+                .selectFrom(BRAND)
+                .where(BRAND.CODE_.in(
+                        this.dsl.select(PRODUCT.BRAND_)
+                                .from(PRODUCT)
+                                .where(PRODUCT.CATEGORY_.eq(categoryId))
+                                .and(PRODUCT.IS_REMOVED_.eq(false))
+                ))
+                .orderBy(BRAND.CODE_.desc())
+                .fetch()
+                .stream()
+                .map(Brand::to)
+                .collect(Collectors.toList());
+    }
+
+
 
     public List<Product> searchByQuery(String searchQuery) {
         //1 search in titles

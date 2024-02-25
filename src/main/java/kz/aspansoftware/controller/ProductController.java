@@ -15,6 +15,7 @@ import io.micronaut.transaction.annotation.Transactional;
 import kz.aspansoftware.records.Page;
 import kz.aspansoftware.records.Product;
 import kz.aspansoftware.records.ProductExtended;
+import kz.aspansoftware.records.ProductWithBrandFilter;
 import kz.aspansoftware.repository.ProductRepository;
 import kz.aspansoftware.service.ProductPagination;
 
@@ -54,11 +55,11 @@ public class ProductController {
 
     @Get("/category/{categoryId}")
     @Connectable
-    public List<ProductExtended> findByCategory(@PathVariable Long categoryId,
-                                                @QueryValue Optional<Boolean> isSantec,
-                                                @QueryValue Optional<Boolean> isValtec
-    ) {
-        return this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId);
+    public ProductWithBrandFilter findByCategory(@PathVariable Long categoryId) {
+
+        var products = this.repository.findByCategoryAndParamsExtendedWithFilename(categoryId);
+        var brands = this.repository.findListOfBrandsInProductsForFiltering(categoryId);
+        return new ProductWithBrandFilter(products, brands);
     }
 
 }

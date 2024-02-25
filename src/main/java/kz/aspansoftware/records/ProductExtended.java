@@ -5,7 +5,7 @@ import org.jooq.Record;
 
 @Serdeable
 public record ProductExtended(Long id, String name, String description, Long category, String video, Boolean isNew,
-                              Boolean isRemoved, Boolean isSantec, String filename) {
+                              Boolean isRemoved, Boolean isSantec, String brand, String filename) {
     public static ProductExtended  toProduct(Record record) {
         return new ProductExtended(record.getValue("id_", Long.class),
                 record.getValue("name_", String.class),
@@ -15,6 +15,7 @@ public record ProductExtended(Long id, String name, String description, Long cat
                 record.getValue("is_new_", Boolean.class),
                 record.getValue("is_removed_", Boolean.class),
                 record.getValue("is_santec_", Boolean.class),
+                record.getValue("brand_", String.class),
                 record.getValue("filename_", String.class)
                 );
     }
